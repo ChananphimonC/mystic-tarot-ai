@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  /* Deep space surfaces — StarWhisper palette */
+  --color-void-950: #0b1026;
+  --color-void-900: #12183a;
+  --color-void-800: #1c2150;
+  --color-void-700: #30245f;
+  --color-void-600: #443677;
+
+  /* Warm gold — the one hero accent (CTAs, highlights) */
+  --color-gold-300: #f8e8c0;
+  --color-gold-400: #f4dfa6;
+  --color-gold-500: #d9be7a;
+  --color-gold-600: #b99a55;
+
+  /* Lavender / violet — secondary, used for gentle emphasis only */
+  --color-nebula-400: #8b76c4;
+  --color-nebula-500: #6d5aa8;
+  --color-nebula-300: #b9a7e8;
+
+  /* Moonlight text tones */
+  --color-starlight-50: #fff5fc;
+  --color-starlight-300: #d9d3e6;
+  --color-starlight-500: #a89fc0;
+  --color-starlight-700: #6d6488;
+
+  --font-display: "Cormorant Garamond", "Noto Serif Thai", serif;
+  --font-body: "Plus Jakarta Sans", "Noto Sans Thai", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-body);
+  background: radial-gradient(ellipse 120% 80% at 50% -10%, #22265c 0%, var(--color-void-950) 55%);
+  background-attachment: fixed;
+  color: var(--color-starlight-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes slow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
