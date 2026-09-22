@@ -40,3 +40,23 @@ export function rankBadge(cardName: string): string {
   const rank = cardName.split(" of ")[0];
   return RANK_BADGES[rank] ?? rank.slice(0, 1);
 }
+
+const NUMERIC_RANKS: Record<string, number> = {
+  Ace: 1,
+  Two: 2,
+  Three: 3,
+  Four: 4,
+  Five: 5,
+  Six: 6,
+  Seven: 7,
+  Eight: 8,
+  Nine: 9,
+  Ten: 10,
+};
+
+/** Pip count for a minor arcana card (1-10), or null for court cards
+ * (Page/Knight/Queen/King), which show a single figure glyph instead. */
+export function numericRank(cardName: string): number | null {
+  const rank = cardName.split(" of ")[0];
+  return NUMERIC_RANKS[rank] ?? null;
+}
