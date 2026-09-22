@@ -228,8 +228,10 @@ export function CardSpreadStep({ onComplete }: Props) {
           }
           const isHovered = hoveredCardId === card.id;
           return (
-            <div
+            <motion.div
               key={card.id}
+              layout
+              transition={{ layout: { duration: 0.5, ease: "easeInOut" } }}
               data-testid="ring-card"
               data-card-id={card.id}
               className="relative"
@@ -250,7 +252,7 @@ export function CardSpreadStep({ onComplete }: Props) {
               >
                 <TarotCard faceUp={false} showName={false} size="grid" onClick={() => handlePick(card.id)} />
               </motion.div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

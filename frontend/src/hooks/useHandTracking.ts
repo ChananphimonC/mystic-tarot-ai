@@ -5,36 +5,21 @@ export type HandTrackingStatus = "idle" | "loading" | "active" | "error";
 
 type Service = InstanceType<typeof import("../lib/handTracking/HandTrackingService").HandTrackingService>;
 
-/** Lower = smoother but laggier, higher = snappier but more jittery. 0.3 is a
- * reasonable middle ground for a fingertip-driven cursor. */
-const SMOOTHING = 0.3;
-
 /** Loads the hand-tracking module (and MediaPipe itself) only when `start()`
  * is actually called, via a dynamic import — so pages/users that never enable
  * it never fetch that code, not even as part of the main bundle. */
 export function useHandTracking() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const serviceRef = useRef<Service | null>(null);
-  const smoothedRef = useRef<{ x: number; y: number } | null>(null);
   const [frame, setFrame] = useState<HandFrame | null>(null);
   const [status, setStatus] = useState<HandTrackingStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Smoothing (One Euro Filter) already happens in HandTrackingService,
+  // which has access to real per-frame timestamps and can adapt to motion
+  // speed — a fixed-factor LERP here would only add extra lag on top.
   const handleRawFrame = useCallback((raw: HandFrame | null) => {
-    if (!raw) {
-      smoothedRef.current = null;
-      setFrame(null);
-      return;
-    }
-    // Low-pass filter (LERP toward the new reading) so the cursor glides
-    // instead of jumping to each new raw MediaPipe detection.
-    const prev = smoothedRef.current ?? { x: raw.x, y: raw.y };
-    const smoothed = {
-      x: prev.x + (raw.x - prev.x) * SMOOTHING,
-      y: prev.y + (raw.y - prev.y) * SMOOTHING,
-    };
-    smoothedRef.current = smoothed;
-    setFrame({ x: smoothed.x, y: smoothed.y, pinching: raw.pinching });
+    setFrame(raw);
   }, []);
 
   const start = useCallback(async () => {
@@ -57,7 +42,6 @@ export function useHandTracking() {
   const stop = useCallback(() => {
     serviceRef.current?.stop();
     serviceRef.current = null;
-    smoothedRef.current = null;
     setFrame(null);
     setStatus("idle");
   }, []);
