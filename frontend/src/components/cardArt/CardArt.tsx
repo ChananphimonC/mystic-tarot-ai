@@ -1,9 +1,12 @@
 import { useMemo } from "react";
 import { MAJOR_GLYPHS, SUIT_GLYPHS } from "./glyphs";
 import { createSeededRandom } from "../../utils/seededRandom";
-import { rankBadge, toRomanNumeral } from "../../utils/cardDisplay";
+import { rankBadge, numericRank, toRomanNumeral } from "../../utils/cardDisplay";
 import { MAJOR_ARCANA_ORDER } from "../../data/majorArcanaOrder";
+import { getPipPositions } from "../../utils/pipLayout";
 import type { TarotCardMeta } from "../../types/tarot";
+
+const PIP_SCALE = 0.22;
 
 interface Props {
   card: TarotCardMeta;
@@ -25,8 +28,10 @@ function useConstellation(seed: string, count: number) {
  * without needing 78 hand-illustrated images. */
 export function CardArt({ card }: Props) {
   const stars = useConstellation(card.id, 16);
-  const glyph = card.arcana === "major" ? MAJOR_GLYPHS[card.id] : SUIT_GLYPHS[card.suit ?? ""];
+  const suitGlyph = SUIT_GLYPHS[card.suit ?? ""];
+  const glyph = card.arcana === "major" ? MAJOR_GLYPHS[card.id] : suitGlyph;
   const badge = card.arcana === "major" ? toRomanNumeral(MAJOR_ARCANA_ORDER[card.id] ?? 0) : rankBadge(card.name);
+  const pipCount = card.arcana === "minor" ? numericRank(card.name) : null;
 
   return (
     <svg viewBox="0 0 100 100" className="h-full w-full">
@@ -40,9 +45,21 @@ export function CardArt({ card }: Props) {
       {stars.map((s, i) => (
         <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#f8e8c0" opacity={0.5} />
       ))}
-      <g transform="translate(18,20) scale(0.64)" style={{ color: "#f8e8c0" }}>
-        {glyph}
-      </g>
+      {pipCount ? (
+        getPipPositions(pipCount).map(([x, y], i) => (
+          <g
+            key={i}
+            transform={`translate(${x - 50 * PIP_SCALE},${y - 50 * PIP_SCALE}) scale(${PIP_SCALE})`}
+            style={{ color: "#f8e8c0" }}
+          >
+            {suitGlyph}
+          </g>
+        ))
+      ) : (
+        <g transform="translate(18,20) scale(0.64)" style={{ color: "#f8e8c0" }}>
+          {glyph}
+        </g>
+      )}
       <circle cx="14" cy="14" r="8" fill="none" stroke="#b99a55" strokeWidth="1.2" />
       <text x="14" y="17.5" fontSize="8" textAnchor="middle" fill="#f8e8c0" fontFamily="Cormorant Garamond, serif">
         {badge}
